@@ -116,14 +116,13 @@
  
  roverControl raceTrack(const pixy_vector_s &pixy)
  {
-     // Vector main_vec;
+     Vector main_vec;
      Vector vec1 = copy_vectors(pixy, 1);
      Vector vec2 = copy_vectors(pixy, 2);
      roverControl control = control_track(pixy);
-     // roverControl control{};
-     // float dy;
-     // float dx;
-     // float angle;
+     float dy;
+     float dx;
+     float angle;
      static hrt_abstime no_line_time = 0;	// time variable for time since no line detected
      hrt_abstime time_diff = 0;
      static bool first_call = true;
@@ -154,8 +153,6 @@
          first_call = true;
  
          control.speed=0.5f;
-         control.steer = 0.0f;
-         // control.steer=0.0f;
  
          diff = vec1.m_x0-vec2.m_x0;
          track_width = abs(diff);
@@ -166,28 +163,23 @@
          //     //  if track_width is small (narrow track), we can go faster
          //       control.speed = 0.4f;
          //     }
-         // main_vec.m_x1 = (vec1.m_x1 + vec2.m_x1)/2;
-         // main_vec.m_x0 = (vec1.m_x0 + vec2.m_x0)/2;
-         // main_vec.m_y0 = (vec1.m_y0 + vec2.m_y0)/2;
-         // main_vec.m_y1 = (vec1.m_y1 + vec2.m_y1)/2;
+         main_vec.m_x1 = (vec1.m_x1 + vec2.m_x1)/2;
+         main_vec.m_x0 = (vec1.m_x0 + vec2.m_x0)/2;
+         main_vec.m_y0 = (vec1.m_y0 + vec2.m_y0)/2;
+         main_vec.m_y1 = (vec1.m_y1 + vec2.m_y1)/2;
  
-         // dy=(main_vec.m_y1-main_vec.m_y0);
-         // dx=(main_vec.m_x1-main_vec.m_x0);
+         dy=(main_vec.m_y0-main_vec.m_y1);
+         dx=(main_vec.m_x1-main_vec.m_x0);
  
-         // angle=atan2(dy,dx)*180/M_PI + 90;
-         // // control.steer=angle/60;
-         // // control.steer=-angle/60;
-         // // angle = atan2(dy, dx) * 180 / M_PI + 90;
-         // control.steer = angle / 60;
-         // if (control.steer>1){
-         // 	control.steer=1;
-         // }
-         // if (control.steer<-1){
-         // 	control.steer=-1;
-         // }
+         angle = atan2(dy,dx)*180/M_PI;
+         if (dx < 1 || dx > -1)
+         {
+             angle = 0;
+         }
+         control.steer=angle/60;
          if (track_width < w)
          {
-             control.speed= 0.4f;
+             control.speed= 0.2f;
              if (diff < 0)
              {
                      control.steer=1;
@@ -197,16 +189,14 @@
                  control.steer=-1;
              }
          }
-         // // control.steer = control.steer * 1000 + 1500 - 130;
- 
-         // // Ensure the steering is within the range
-         // if (control.steer > 2000) {
-         // 	control.steer = 2000;
-         // }
-         // if (control.steer < 1000) {
-         // 	control.steer = 1000;
-         // }}
- 
+         if(control.steer < -1)
+         {
+             control.steer = -1;
+         }
+         if(control.steer > 1)
+         {
+             control.steer = 1;
+         }
          break;
  
      case 1:
@@ -228,7 +218,7 @@
              // main_vec.m_y1 = vec1.m_y1;
          }
  
-         control.speed=0.4f;
+         control.speed=0.2f;
  
          // dy=(main_vec.m_y1-main_vec.m_y0);
          // dx=(main_vec.m_x1-main_vec.m_x0);

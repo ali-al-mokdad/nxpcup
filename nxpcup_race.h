@@ -62,7 +62,7 @@
  // 2000us is full forward.
  // Motor PWM rate depends on battery level and other factors.
  // Find the motor activation PWM and use that as a base for the mapping.
- #define MOTOR_ACTIVATION_PWM  1571
+ #define MOTOR_ACTIVATION_PWM  1580
  
  struct roverControl {
      float steer;
